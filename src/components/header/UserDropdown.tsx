@@ -26,17 +26,21 @@ export default function UserDropdown() {
     setIsOpen((prev) => !prev);
   };
   const closeDropdown = () => setIsOpen(false);
-  //ล็อกเอาต์แบบเคลียร์คุกกี้ (HttpOnly) ผ่าน NextAuth แล้วค่อย redirect เอง
-  const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     closeDropdown();
 
-    // ให้ NextAuth เคลียร์ session/cookie ก่อน (ไม่ redirect เอง)
-    await signOut({ redirect: false });
+    // เรียก API ของเราให้ลบ prism_session แล้วให้ NextAuth เซ็ต Set-Cookie ลบ session
+    await fetch("/api/logout", {
+      method: "POST",
+      // ป้องกัน cache และให้แน่ใจว่า cookie ถูกส่งมาด้วย
+      credentials: "same-origin",
+      cache: "no-store",
+    });
 
-    // บังคับไปหน้า /login และรีเฟรช state client กัน cache/back
-    router.push("/login");
+    // จากนั้นค่อยเปลี่ยนหน้าแบบ SPA (ไม่เกิด popup/แท็บใหม่)
+    router.replace("/login");
     router.refresh();
   };
 
@@ -134,7 +138,8 @@ export default function UserDropdown() {
         </ul>
 
         <button
-          onClick={handleSignOut}
+          type="button"
+          onClick={handleLogout}
           className="group flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg text-theme-sm hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-100"
         >
           <span className={iconWrapClass}>

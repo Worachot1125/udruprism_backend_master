@@ -47,18 +47,21 @@ export default function SignInForm() {
         </p>
       </div>
 
-      <div className="mb-6">
-        <Button
-          type="button"
-          className="w-full inline-flex items-center justify-center gap-3"
-          size="sm"
-          onClick={handleGoogle}
-        >
-          <GoogleIcon />
-          Sign in with Google
-        </Button>
+<div className="mb-6">
+  <Button
+    type="button"
+    variant="outline"
+    className="w-full h-12 text-base font-medium bg-blue-800 hover:bg-blue-600 border-2 border-blue-500 hover:border-blue-600 text-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+    onClick={handleGoogle}
+  >
+    <div className="flex items-center justify-center gap-3">
+      <div className="flex items-center justify-center w-5 h-5">
+        <GoogleIcon className="w-full h-full" />
       </div>
-
+      <span>Sign in with Google</span>
+    </div>
+  </Button>
+</div>
       <p className="text-xs text-center text-gray-500 dark:text-gray-400">
         Access is restricted to the configured Super Admin email.
       </p>

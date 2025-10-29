@@ -26,7 +26,19 @@ export default function UserDropdown() {
     setIsOpen((prev) => !prev);
   };
   const closeDropdown = () => setIsOpen(false);
-  const handleSignOut = async () => signOut({ callbackUrl: "/login" });
+  //ล็อกเอาต์แบบเคลียร์คุกกี้ (HttpOnly) ผ่าน NextAuth แล้วค่อย redirect เอง
+  const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeDropdown();
+
+    // ให้ NextAuth เคลียร์ session/cookie ก่อน (ไม่ redirect เอง)
+    await signOut({ redirect: false });
+
+    // บังคับไปหน้า /login และรีเฟรช state client กัน cache/back
+    router.push("/login");
+    router.refresh();
+  };
 
   if (isLoading) {
     return <div className="h-11 w-28 rounded-lg bg-gray-100 dark:bg-white/5 animate-pulse" />;

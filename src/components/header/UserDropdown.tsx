@@ -31,15 +31,17 @@ export default function UserDropdown() {
     e.stopPropagation();
     closeDropdown();
 
-    // เรียก API ของเราให้ลบ prism_session แล้วให้ NextAuth เซ็ต Set-Cookie ลบ session
+    // 1) ลบคุกกี้ custom ฝั่งเซิร์ฟเวอร์ก่อน (prism_session, session ฯลฯ)
     await fetch("/api/logout", {
       method: "POST",
-      // ป้องกัน cache และให้แน่ใจว่า cookie ถูกส่งมาด้วย
       credentials: "same-origin",
       cache: "no-store",
     });
 
-    // จากนั้นค่อยเปลี่ยนหน้าแบบ SPA (ไม่เกิด popup/แท็บใหม่)
+    // 2) แล้วค่อยให้ NextAuth ลบคุกกี้ HttpOnly ของตัวเอง (ผ่าน CSRF ถูกต้อง)
+    await signOut({ redirect: false, callbackUrl: "/login" });
+
+    // 3) เปลี่ยนหน้าแบบ SPA (ไม่เกิด popup/แท็บใหม่) และรีเฟรช state
     router.replace("/login");
     router.refresh();
   };

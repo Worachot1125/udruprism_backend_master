@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 
-// POST /api/logout
-export async function POST(req: Request) {
-    // 1) เตรียม redirect ไปยัง NextAuth v4 signout (ต้องคงเป็น POST → ใช้ 307)
-    const url = new URL("/api/auth/signout", req.url);
-    url.searchParams.set("callbackUrl", "/login");
+export async function POST() {
+    const res = NextResponse.json({ ok: true });
 
-    // 2) สร้าง Response และลบคุกกี้ custom ที่ middleware ใช้ (เช่น prism_session)
-    const res = NextResponse.redirect(url, { status: 307 });
+    // คุกกี้ custom ของแอป
+    ["prism_session", "session"].forEach((n) => res.cookies.delete(n));
 
-    // ลบคุกกี้ custom ของคุณที่ใช้เช็คสิทธิ์ (แก้ชื่อให้ตรงกับของจริง)
-    res.cookies.delete("prism_session");
+    // คุกกี้ non-auth ของ NextAuth/Google (ไม่จำเป็นต้องลบ แต่ถ้าอยากโล่ง)
+    ["next-auth.callback-url", "next-auth.csrf-token", "g_oauth_state"].forEach((n) =>
+        res.cookies.delete(n)
+    );
 
-    // (ถ้ามีคุกกี้ custom อื่นๆ ให้ลบเพิ่มได้ที่นี่)
-    // res.cookies.delete("another_cookie");
+    // หมายเหตุ: session-token ของ NextAuth เราให้ signOut() จัดการ (คุณทำแล้ว)
 
     return res;
 }

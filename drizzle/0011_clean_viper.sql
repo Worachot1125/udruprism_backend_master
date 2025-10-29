@@ -1,0 +1,1 @@
+ALTER TABLE "Policy" DROP CONSTRAINT "Policy_name_unique";

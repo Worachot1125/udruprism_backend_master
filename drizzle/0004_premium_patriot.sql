@@ -1,0 +1,1 @@
+ALTER TABLE "Model" ADD COLUMN "provider" varchar(20) NOT NULL;
